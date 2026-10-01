@@ -14,12 +14,13 @@ const motionComponentCache = new Map<
   React.ComponentType<MotionHTMLProps>
 >();
 
-const getMotionComponent = (element: keyof JSX.IntrinsicElements) => {
-  let component = motionComponentCache.get(element);
-  if (!component) {
-    component = motion.create(element);
-    motionComponentCache.set(element, component);
-  }
+const getMotionComponent = (
+  element: keyof JSX.IntrinsicElements,
+): React.ComponentType<MotionHTMLProps> => {
+  const cached = motionComponentCache.get(element);
+  if (cached) return cached;
+  const component = motion.create(element) as unknown as React.ComponentType<MotionHTMLProps>;
+  motionComponentCache.set(element, component);
   return component;
 };
 
