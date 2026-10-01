@@ -29,9 +29,14 @@ export function createAiCall(request: Request | undefined, messages: ModelMessag
     headers: { "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
     fetch: runIdFetch.fetch,
   });
+  const instructions = messages
+    .filter((m) => m.role === "system")
+    .map((m) => (typeof m.content === "string" ? m.content : ""))
+    .join("\n\n");
   const result = streamText({
     model: provider.responses(MODEL),
-    messages,
+    ...(instructions ? { instructions } : {}),
+    messages: messages.filter((m) => m.role !== "system"),
     ...(request ? { abortSignal: request.signal } : {}),
     providerOptions: {
       openai: {
