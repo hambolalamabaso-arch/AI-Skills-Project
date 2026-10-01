@@ -48,7 +48,8 @@ export function createAiCall(request: Request | undefined, messages: ModelMessag
 
 export function safeAiError(error: unknown) {
   const message = error instanceof Error ? error.message : "The AI request could not be completed.";
-  if (message.includes("402")) return "AI credits are unavailable. Please review workspace billing and try again.";
+  if (message.includes("402"))
+    return "AI credits are unavailable. Please review workspace billing and try again.";
   if (message.includes("429")) return "AI is busy right now. Please wait a moment and try again.";
   return message;
 }
