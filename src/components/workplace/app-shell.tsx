@@ -8,7 +8,7 @@ type Thread = { id: string; title: string };
 type ThreadsContextValue = { threads: Thread[]; createThread: () => Thread; renameThread: (id: string, title: string) => void };
 const ThreadsContext = createContext<ThreadsContextValue | null>(null);
 
-function newId() { return crypto.randomUUID(); }
+function newId() { return typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `thread-${Date.now()}-${Math.random().toString(36).slice(2)}`; }
 
 export function useThreads() {
   const value = useContext(ThreadsContext);
