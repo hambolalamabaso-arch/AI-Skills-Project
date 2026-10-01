@@ -128,7 +128,9 @@ export function AppShell({
       try {
         setThreads(JSON.parse(stored) as Thread[]);
         return;
-      } catch {}
+      } catch {
+        sessionStorage.removeItem("workplace-threads");
+      }
     }
     const initial = [{ id: newId(), title: "New conversation" }];
     sessionStorage.setItem("workplace-threads", JSON.stringify(initial));
