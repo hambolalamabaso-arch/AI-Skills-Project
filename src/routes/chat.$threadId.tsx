@@ -11,8 +11,10 @@ export const Route = createFileRoute("/chat/$threadId")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => {
-    const { threadId } = Route.useParams();
-    return <ChatTool threadId={threadId} />;
-  },
+  component: ChatPage,
 });
+
+function ChatPage() {
+  const { threadId } = Route.useParams();
+  return <ChatTool threadId={threadId} />;
+}
