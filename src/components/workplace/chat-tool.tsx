@@ -76,99 +76,99 @@ function ChatInner({ threadId }: { threadId: string }) {
     await sendMessage({ text });
   }
   return (
-      <div className="mx-auto flex h-[calc(100vh-10rem)] min-h-[620px] max-w-5xl flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-        <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <div className="flex items-center gap-3">
-            <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <Bot />
-            </span>
-            <div>
-              <h2 className="text-sm font-semibold">Orbit</h2>
-              <p className="text-xs text-muted-foreground">Workplace productivity assistant</p>
-            </div>
+    <div className="mx-auto flex h-[calc(100vh-10rem)] min-h-[620px] max-w-5xl flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+      <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <div className="flex items-center gap-3">
+          <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
+            <Bot />
+          </span>
+          <div>
+            <h2 className="text-sm font-semibold">Orbit</h2>
+            <p className="text-xs text-muted-foreground">Workplace productivity assistant</p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              const next = createThread();
-              void navigate({ to: "/chat/$threadId", params: { threadId: next.id } });
-            }}
-          >
-            <Plus />
-            New chat
-          </Button>
         </div>
-        <Conversation>
-          <ConversationContent className="mx-auto w-full max-w-3xl px-5 py-8">
-            {messages.length === 0 && (
-              <ConversationEmptyState
-                icon={<MessageSquareText className="size-9" />}
-                title="What can I help you move forward?"
-                description="Plan a project, improve a message, prepare for a meeting, or think through your priorities."
-              />
-            )}
-            {messages.map((message) => (
-              <Message from={message.role} key={message.id}>
-                <MessageContent>
-                  {message.parts.map((part, index) =>
-                    part.type === "text" ? (
-                      <MessageResponse key={index}>{part.text}</MessageResponse>
-                    ) : part.type === "reasoning" && status === "streaming" ? (
-                      <Shimmer key={index}>Thinking through your request…</Shimmer>
-                    ) : null,
-                  )}
-                </MessageContent>
-                {message.role === "assistant" && (
-                  <MessageActions>
-                    <MessageAction
-                      tooltip="Copy response"
-                      onClick={() => {
-                        const text = message.parts
-                          .filter((p) => p.type === "text")
-                          .map((p) => (p.type === "text" ? p.text : ""))
-                          .join("");
-                        void navigator.clipboard.writeText(text);
-                      }}
-                    >
-                      <Copy />
-                    </MessageAction>
-                  </MessageActions>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            const next = createThread();
+            void navigate({ to: "/chat/$threadId", params: { threadId: next.id } });
+          }}
+        >
+          <Plus />
+          New chat
+        </Button>
+      </div>
+      <Conversation>
+        <ConversationContent className="mx-auto w-full max-w-3xl px-5 py-8">
+          {messages.length === 0 && (
+            <ConversationEmptyState
+              icon={<MessageSquareText className="size-9" />}
+              title="What can I help you move forward?"
+              description="Plan a project, improve a message, prepare for a meeting, or think through your priorities."
+            />
+          )}
+          {messages.map((message) => (
+            <Message from={message.role} key={message.id}>
+              <MessageContent>
+                {message.parts.map((part, index) =>
+                  part.type === "text" ? (
+                    <MessageResponse key={index}>{part.text}</MessageResponse>
+                  ) : part.type === "reasoning" && status === "streaming" ? (
+                    <Shimmer key={index}>Thinking through your request…</Shimmer>
+                  ) : null,
                 )}
-              </Message>
-            ))}
-            {status === "submitted" && (
-              <Message from="assistant">
-                <MessageContent>
-                  <Shimmer>Thinking through your request…</Shimmer>
-                </MessageContent>
-              </Message>
-            )}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
-        <div className="border-t border-border bg-background p-4">
-          <div className="mx-auto max-w-3xl">
-            {(errorText || error) && (
-              <p className="mb-3 rounded-md bg-destructive-soft p-3 text-sm text-destructive">
-                {errorText || error?.message}
-              </p>
-            )}
-            <PromptInput onSubmit={submit}>
-              <PromptInputTextarea ref={inputRef} placeholder="Ask about your work…" autoFocus />
-              <PromptInputFooter className="justify-between">
-                <span className="text-xs text-muted-foreground">
-                  Press Enter to send · Shift + Enter for a new line
-                </span>
-                <PromptInputSubmit status={status} onStop={stop} disabled={!busy && false} />
-              </PromptInputFooter>
-            </PromptInput>
-            <p className="mt-2 text-center text-xs text-muted-foreground">
-              AI-generated content may be inaccurate - always review before use.
+              </MessageContent>
+              {message.role === "assistant" && (
+                <MessageActions>
+                  <MessageAction
+                    tooltip="Copy response"
+                    onClick={() => {
+                      const text = message.parts
+                        .filter((p) => p.type === "text")
+                        .map((p) => (p.type === "text" ? p.text : ""))
+                        .join("");
+                      void navigator.clipboard.writeText(text);
+                    }}
+                  >
+                    <Copy />
+                  </MessageAction>
+                </MessageActions>
+              )}
+            </Message>
+          ))}
+          {status === "submitted" && (
+            <Message from="assistant">
+              <MessageContent>
+                <Shimmer>Thinking through your request…</Shimmer>
+              </MessageContent>
+            </Message>
+          )}
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+      <div className="border-t border-border bg-background p-4">
+        <div className="mx-auto max-w-3xl">
+          {(errorText || error) && (
+            <p className="mb-3 rounded-md bg-destructive-soft p-3 text-sm text-destructive">
+              {errorText || error?.message}
             </p>
-          </div>
+          )}
+          <PromptInput onSubmit={submit}>
+            <PromptInputTextarea ref={inputRef} placeholder="Ask about your work…" autoFocus />
+            <PromptInputFooter className="justify-between">
+              <span className="text-xs text-muted-foreground">
+                Press Enter to send · Shift + Enter for a new line
+              </span>
+              <PromptInputSubmit status={status} onStop={stop} disabled={!busy && false} />
+            </PromptInputFooter>
+          </PromptInput>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            AI-generated content may be inaccurate - always review before use.
+          </p>
         </div>
       </div>
+    </div>
   );
 }
 export function ChatTool({ threadId }: { threadId: string }) {
