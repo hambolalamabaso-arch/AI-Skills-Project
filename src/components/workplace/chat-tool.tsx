@@ -76,7 +76,6 @@ function ChatInner({ threadId }: { threadId: string }) {
     await sendMessage({ text });
   }
   return (
-    <AppShell title="AI Workplace Chat" subtitle="A focused thinking partner for your workday.">
       <div className="mx-auto flex h-[calc(100vh-10rem)] min-h-[620px] max-w-5xl flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div className="flex items-center gap-3">
@@ -170,9 +169,12 @@ function ChatInner({ threadId }: { threadId: string }) {
           </div>
         </div>
       </div>
-    </AppShell>
   );
 }
 export function ChatTool({ threadId }: { threadId: string }) {
-  return <ChatInner key={threadId} threadId={threadId} />;
+  return (
+    <AppShell title="AI Workplace Chat" subtitle="A focused thinking partner for your workday.">
+      <ChatInner key={threadId} threadId={threadId} />
+    </AppShell>
+  );
 }

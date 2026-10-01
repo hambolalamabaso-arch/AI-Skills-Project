@@ -3,16 +3,6 @@ import { ArrowRight, Bot, Clock3, FileText, Mail, ShieldCheck } from "lucide-rea
 import { AppShell } from "./app-shell";
 
 export function Dashboard() {
-  let threadId: string | undefined;
-  if (typeof window !== "undefined") {
-    try {
-      threadId = (
-        JSON.parse(sessionStorage.getItem("workplace-threads") || "[]") as { id: string }[]
-      )[0]?.id;
-    } catch {
-      threadId = undefined;
-    }
-  }
   return (
     <AppShell title="Dashboard" subtitle="Everything you need for a more productive workday.">
       <section className="mb-8 max-w-3xl">
@@ -59,7 +49,7 @@ export function Dashboard() {
         >
           <Link
             to="/chat/$threadId"
-            params={{ threadId: threadId || "new" }}
+            params={{ threadId: "new" }}
             className="mt-auto flex items-center gap-2 pt-6 text-sm font-semibold text-primary"
           >
             Start a conversation
