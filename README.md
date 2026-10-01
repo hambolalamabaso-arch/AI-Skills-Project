@@ -1,94 +1,152 @@
-# AI Productivity Hub
+# AI Workplace Productivity Assistant
 
-Build a modern, responsive SaaS web app called AI Workplace Productivity Assistant. Frontend only, no backend, no auth. Users land directly on the dashboard with no sign-in.
+A modern, responsive web application that helps professionals automate everyday workplace tasks using AI — email drafting, meeting note summarization, and an interactive workplace chatbot.
 
-Layout:
+> **Author:** Esihle Bayanda Dlamini
 
-- Persistent sidebar with: Dashboard, Email Generator, Meeting Summarizer, AI Chat
+---
 
-- Sidebar collapses to hamburger drawer on mobile
+## Project Overview
 
-- Clean dashboard shell with topbar
+**AI Workplace Productivity Assistant** is a frontend-only SaaS-style web app that brings three AI-powered tools together in a single dashboard. It requires no backend and no authentication — users land directly on the dashboard and start working immediately.
 
-- Fully responsive for desktop and mobile
+The app is built around a clean, professional dashboard shell with persistent sidebar navigation, and is fully responsive across desktop and mobile.
 
-Design:
+---
 
-- Colors: black, white, and dark semi-brown accent (#3B2F2A warm dark taupe)
+## Features Implemented
 
-- Minimal professional SaaS style
+### 1. Smart Email Generator
+Generate professional emails from a few key inputs.
+- Tone selection: **Formal**, **Friendly**, **Persuasive**
+- Inputs for recipient, subject/purpose, key points, and length
+- Structured AI prompt behind each generation
+- Editable output with **Copy** and **Regenerate** actions
 
-- Generous whitespace, subtle borders, soft shadows, rounded corners
+### 2. Meeting Notes Summarizer
+Turn lengthy meeting notes into a structured breakdown.
+- Paste raw meeting notes and summarize instantly
+- Extracts **Summary**, **Action Items**, **Decisions**, and **Deadlines**
+- Each section rendered in its own card
+- Editable output with **Copy** and **Export**
 
-- Clear typographic hierarchy, smooth transitions
+### 3. AI Chatbot Interface
+An interactive workplace assistant for ad-hoc prompts.
+- Persistent multi-turn chat thread with message bubbles
+- Typing indicator and loading states
+- System prompt frames it as a workplace productivity assistant
 
-Build 3 tools, each with input panel and output panel:
+### UI / UX
+- Modern dashboard layout with a topbar and sidebar navigation
+- Sidebar collapses to a hamburger drawer on mobile
+- Clean input and output panels for every tool
+- Professional SaaS aesthetic — whitespace, soft shadows, rounded corners, subtle borders
+- Colour palette: **black, white, and a touch of dark semi-brown**
+- Empty states, error handling, and smooth transitions throughout
 
-1. Smart Email Generator
+### Responsible AI
+- Visible **Responsible AI disclaimer** on the dashboard and near each output
+- All AI outputs are **directly editable** by the user before copying
+- All responses are genuinely AI-generated via a live model call — no hardcoded or generic placeholder responses
 
-Inputs: recipient, subject/purpose, key points, tone selector (Formal, Friendly, Persuasive), length selector
+---
 
-Output: editable text field with Copy and Regenerate buttons
+## Technologies and Tools Used
 
-Use a hidden structured system prompt to generate a professional email
+| Layer | Technology |
+|---|---|
+| Frontend | React + TypeScript |
+| Styling | Tailwind CSS |
+| UI Components | shadcn/ui |
+| Routing | Hash-based router / tab state (no server routes) |
+| AI Integration | Lovable AI (Gemini) via built-in integration |
+| Build Tool | Vite |
+| Platform | Lovable |
 
-2. Meeting Notes Summarizer
+Structured system prompts are defined per tool (email, summarizer, chatbot) so each generates context-appropriate output.
 
-Input: large textarea to paste raw meeting notes
+---
 
-Output: 4 separate cards for Summary, Action Items, Decisions, Deadlines
+## Project Structure
 
-Editable output with Copy and Export buttons
-
-3. AI Chatbot
-
-Persistent chat thread with message bubbles, typing indicator, multi-turn context
-
-Input box at bottom, system prompt frames it as a workplace productivity assistant
-
-AI requirements:
-
-- All outputs must be genuinely AI-generated via Lovable AI / Gemini integration
-
-- Use a distinct structured system prompt per tool
-
-- Never use hardcoded, templated, or placeholder responses
-
-- Every result must be a real model call
-
-- Include loading states, error handling, and clean empty states
-
-Extras:
-
-- Add visible Responsible AI disclaimer on dashboard and near each output: "AI-generated content may be inaccurate - always review before use."
-
-- Add small footer note
-
-- Make all AI outputs directly editable before copying
-
-- Use hash-based router or tab state, no server routes needed
-
-Ship as a single polished demo-ready app.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://clever-desk-copilot.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/368f4672-0bf2-400b-9837-ac13d1fdb635).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
 ```
+ai-workplace-productivity-assistant/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── Sidebar.tsx
+│   │   ├── Topbar.tsx
+│   │   ├── EmailGenerator.tsx
+│   │   ├── MeetingSummarizer.tsx
+│   │   ├── Chatbot.tsx
+│   │   └── ui/               # shadcn/ui components
+│   ├── lib/
+│   │   └── prompts.ts        # Structured AI system prompts
+│   ├── pages/
+│   │   ├── Dashboard.tsx
+│   │   ├── Email.tsx
+│   │   ├── Summarizer.tsx
+│   │   └── Chat.tsx
+│   ├── App.tsx
+│   └── main.tsx
+├── index.html
+├── tailwind.config.ts
+├── package.json
+└── README.md
+```
+
+---
+
+## Setup Instructions
+
+The app is frontend-only, so setup is minimal.
+
+1. **Clone the repository**
+   ```bash
+   git clone [github.com](https://github.com/)<your-username>/<your-repo>.git
+   cd <your-repo>
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure the AI integration**
+   Add the required API key/configuration for the AI provider (Gemini / Lovable AI) in your environment file. Do not commit secrets.
+   ```bash
+   # .env
+   VITE_AI_API_KEY=your_api_key_here
+   ```
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   ```
+   Open the local URL shown in the terminal.
+
+5. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+No backend, database, or user accounts are required — the app runs entirely in the browser.
+
+---
+
+## Responsible AI Disclaimer
+
+All content produced by this application is generated by an AI model and **may be inaccurate, incomplete, or biased**. Users are responsible for reviewing and editing every output before use. Do not rely on AI-generated text for legal, medical, financial, or other high-stakes decisions without independent verification.
+
+---
+
+## License
+
+This project is open source. Add your preferred license here.
+
+---
+
+## Author
+**Esihle Bayanda Dlamini**
+
+Built with AI assistance on the Lovable platform.
