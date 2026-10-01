@@ -1,2 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";import { ChatTool } from "@/components/workplace/chat-tool";
-export const Route=createFileRoute("/chat/$threadId")({head:()=>({meta:[{title:"AI Chat | AI Workplace"},{name:"description",content:"Chat with a focused AI workplace productivity assistant."},{property:"og:title",content:"AI Workplace Chat"},{property:"og:description",content:"A focused AI thinking partner for your workday."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:()=>{const{threadId}=Route.useParams();return <ChatTool threadId={threadId}/>}});
+import { createFileRoute } from "@tanstack/react-router";
+import { ChatTool } from "@/components/workplace/chat-tool";
+export const Route = createFileRoute("/chat/$threadId")({
+  head: () => ({
+    meta: [
+      { title: "AI Chat | AI Workplace" },
+      { name: "description", content: "Chat with a focused AI workplace productivity assistant." },
+      { property: "og:title", content: "AI Workplace Chat" },
+      { property: "og:description", content: "A focused AI thinking partner for your workday." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: () => {
+    const { threadId } = Route.useParams();
+    return <ChatTool threadId={threadId} />;
+  },
+});

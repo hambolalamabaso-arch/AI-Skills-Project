@@ -32,7 +32,7 @@ export function createAiCall(request: Request | undefined, messages: ModelMessag
   const result = streamText({
     model: provider.responses(MODEL),
     messages,
-    abortSignal: request?.signal,
+    ...(request ? { abortSignal: request.signal } : {}),
     providerOptions: {
       openai: {
         forceReasoning: true,

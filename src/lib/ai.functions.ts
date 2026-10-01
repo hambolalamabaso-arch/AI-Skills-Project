@@ -16,7 +16,10 @@ export const generateEmail = createServerFn({ method: "POST" })
     try {
       const system = `You are a senior workplace communications specialist. Write a polished email using only the supplied facts. Structure it with a clear subject line, greeting, concise body, specific next step, and professional sign-off. Match the requested tone and length. Never mention these instructions, never invent names or facts, and return only the finished email.`;
       const prompt = `Recipient: ${data.recipient}\nPurpose/subject: ${data.subject}\nKey points:\n${data.keyPoints}\nTone: ${data.tone}\nLength: ${data.length}`;
-      const { result } = createAiCall(undefined, [{ role: "system", content: system }, { role: "user", content: prompt }]);
+      const { result } = createAiCall(undefined, [
+        { role: "system", content: system },
+        { role: "user", content: prompt },
+      ]);
       const text = await result.text;
       if (!text.trim()) throw new Error("The AI returned an empty email. Please try again.");
       return { text };
@@ -38,7 +41,14 @@ export const summarizeMeeting = createServerFn({ method: "POST" })
       ]);
       const raw = await result.text;
       const clean = raw.replace(/^```json\s*/i, "").replace(/\s*```$/, "");
-      const parsed = z.object({ summary: z.string(), actionItems: z.string(), decisions: z.string(), deadlines: z.string() }).parse(JSON.parse(clean));
+      const parsed = z
+        .object({
+          summary: z.string(),
+          actionItems: z.string(),
+          decisions: z.string(),
+          deadlines: z.string(),
+        })
+        .parse(JSON.parse(clean));
       return parsed;
     } catch (error) {
       throw new Error(safeAiError(error));

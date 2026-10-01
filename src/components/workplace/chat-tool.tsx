@@ -5,10 +5,174 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AppShell, useThreads } from "./app-shell";
 import { Button } from "@/components/ui/button";
-import { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton } from "@/components/ai-elements/conversation";
-import { Message, MessageAction, MessageActions, MessageContent, MessageResponse } from "@/components/ai-elements/message";
-import { PromptInput, PromptInputFooter, PromptInputSubmit, PromptInputTextarea } from "@/components/ai-elements/prompt-input";
+import {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import {
+  Message,
+  MessageAction,
+  MessageActions,
+  MessageContent,
+  MessageResponse,
+} from "@/components/ai-elements/message";
+import {
+  PromptInput,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputTextarea,
+} from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 
-function ChatInner({threadId}:{threadId:string}){const{threads,createThread,renameThread}=useThreads();const navigate=useNavigate();const inputRef=useRef<HTMLTextAreaElement|null>(null);const[errorText,setErrorText]=useState("");const initialMessages=useMemo(()=>{if(typeof window==="undefined")return[];try{return JSON.parse(sessionStorage.getItem(`workplace-chat-${threadId}`)||"[]") as UIMessage[]}catch{return[]}},[threadId]);const transport=useMemo(()=>new DefaultChatTransport({api:"/api/chat",body:{threadId}}),[threadId]);const{messages,sendMessage,status,stop,error}=useChat({id:threadId,transport,messages:initialMessages,onError:(e)=>setErrorText(e.message)});const busy=status==="submitted"||status==="streaming";useEffect(()=>{sessionStorage.setItem(`workplace-chat-${threadId}`,JSON.stringify(messages));if(messages.length===1){const first=messages[0]?.parts.find(p=>p.type==="text");if(first?.type==="text")renameThread(threadId,first.text.slice(0,34));}},[messages,threadId,renameThread]);useEffect(()=>{if(!busy)inputRef.current?.focus()},[busy,messages.length]);useEffect(()=>{if(!threads.some(t=>t.id===threadId)){const title=threadId==="new"?"New conversation":"Conversation";const stored=[{id:threadId,title},...threads];sessionStorage.setItem("workplace-threads",JSON.stringify(stored));}},[threadId,threads]);async function submit(message:{text:string}){const text=message.text.trim();if(!text||busy)return;setErrorText("");await sendMessage({text});}return <AppShell title="AI Workplace Chat" subtitle="A focused thinking partner for your workday."><div className="mx-auto flex h-[calc(100vh-10rem)] min-h-[620px] max-w-5xl flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm"><div className="flex items-center justify-between border-b border-border px-5 py-4"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground"><Bot/></span><div><h2 className="text-sm font-semibold">Orbit</h2><p className="text-xs text-muted-foreground">Workplace productivity assistant</p></div></div><Button variant="outline" size="sm" onClick={()=>{const next=createThread();void navigate({to:"/chat/$threadId",params:{threadId:next.id}})}}><Plus/>New chat</Button></div><Conversation><ConversationContent className="mx-auto w-full max-w-3xl px-5 py-8">{messages.length===0&&<ConversationEmptyState icon={<MessageSquareText className="size-9"/>} title="What can I help you move forward?" description="Plan a project, improve a message, prepare for a meeting, or think through your priorities."/>}{messages.map(message=><Message from={message.role} key={message.id}><MessageContent>{message.parts.map((part,index)=>part.type==="text"?<MessageResponse key={index}>{part.text}</MessageResponse>:part.type==="reasoning"&&status==="streaming"?<Shimmer key={index}>Thinking through your request…</Shimmer>:null)}</MessageContent>{message.role==="assistant"&&<MessageActions><MessageAction tooltip="Copy response" onClick={()=>{const text=message.parts.filter(p=>p.type==="text").map(p=>p.type==="text"?p.text:"").join("");void navigator.clipboard.writeText(text)}}><Copy/></MessageAction></MessageActions>}</Message>)}{status==="submitted"&&<Message from="assistant"><MessageContent><Shimmer>Thinking through your request…</Shimmer></MessageContent></Message>}</ConversationContent><ConversationScrollButton/></Conversation><div className="border-t border-border bg-background p-4"><div className="mx-auto max-w-3xl">{(errorText||error)&&<p className="mb-3 rounded-md bg-destructive-soft p-3 text-sm text-destructive">{errorText||error?.message}</p>}<PromptInput onSubmit={submit}><PromptInputTextarea ref={inputRef} placeholder="Ask about your work…" autoFocus/><PromptInputFooter className="justify-between"><span className="text-xs text-muted-foreground">Press Enter to send · Shift + Enter for a new line</span><PromptInputSubmit status={status} onStop={stop} disabled={!busy&&false}/></PromptInputFooter></PromptInput><p className="mt-2 text-center text-xs text-muted-foreground">AI-generated content may be inaccurate - always review before use.</p></div></div></div></AppShell>}
-export function ChatTool({threadId}:{threadId:string}){return <ChatInner key={threadId} threadId={threadId}/>}
+function ChatInner({ threadId }: { threadId: string }) {
+  const { threads, createThread, renameThread } = useThreads();
+  const navigate = useNavigate();
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const [errorText, setErrorText] = useState("");
+  const initialMessages = useMemo(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      return JSON.parse(
+        sessionStorage.getItem(`workplace-chat-${threadId}`) || "[]",
+      ) as UIMessage[];
+    } catch {
+      return [];
+    }
+  }, [threadId]);
+  const transport = useMemo(
+    () => new DefaultChatTransport({ api: "/api/chat", body: { threadId } }),
+    [threadId],
+  );
+  const { messages, sendMessage, status, stop, error } = useChat({
+    id: threadId,
+    transport,
+    messages: initialMessages,
+    onError: (e) => setErrorText(e.message),
+  });
+  const busy = status === "submitted" || status === "streaming";
+  useEffect(() => {
+    sessionStorage.setItem(`workplace-chat-${threadId}`, JSON.stringify(messages));
+    if (messages.length === 1) {
+      const first = messages[0]?.parts.find((p) => p.type === "text");
+      if (first?.type === "text") renameThread(threadId, first.text.slice(0, 34));
+    }
+  }, [messages, threadId, renameThread]);
+  useEffect(() => {
+    if (!busy) inputRef.current?.focus();
+  }, [busy, messages.length]);
+  useEffect(() => {
+    if (!threads.some((t) => t.id === threadId)) {
+      const title = threadId === "new" ? "New conversation" : "Conversation";
+      const stored = [{ id: threadId, title }, ...threads];
+      sessionStorage.setItem("workplace-threads", JSON.stringify(stored));
+    }
+  }, [threadId, threads]);
+  async function submit(message: { text: string }) {
+    const text = message.text.trim();
+    if (!text || busy) return;
+    setErrorText("");
+    await sendMessage({ text });
+  }
+  return (
+    <AppShell title="AI Workplace Chat" subtitle="A focused thinking partner for your workday.">
+      <div className="mx-auto flex h-[calc(100vh-10rem)] min-h-[620px] max-w-5xl flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <div className="flex items-center gap-3">
+            <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
+              <Bot />
+            </span>
+            <div>
+              <h2 className="text-sm font-semibold">Orbit</h2>
+              <p className="text-xs text-muted-foreground">Workplace productivity assistant</p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const next = createThread();
+              void navigate({ to: "/chat/$threadId", params: { threadId: next.id } });
+            }}
+          >
+            <Plus />
+            New chat
+          </Button>
+        </div>
+        <Conversation>
+          <ConversationContent className="mx-auto w-full max-w-3xl px-5 py-8">
+            {messages.length === 0 && (
+              <ConversationEmptyState
+                icon={<MessageSquareText className="size-9" />}
+                title="What can I help you move forward?"
+                description="Plan a project, improve a message, prepare for a meeting, or think through your priorities."
+              />
+            )}
+            {messages.map((message) => (
+              <Message from={message.role} key={message.id}>
+                <MessageContent>
+                  {message.parts.map((part, index) =>
+                    part.type === "text" ? (
+                      <MessageResponse key={index}>{part.text}</MessageResponse>
+                    ) : part.type === "reasoning" && status === "streaming" ? (
+                      <Shimmer key={index}>Thinking through your request…</Shimmer>
+                    ) : null,
+                  )}
+                </MessageContent>
+                {message.role === "assistant" && (
+                  <MessageActions>
+                    <MessageAction
+                      tooltip="Copy response"
+                      onClick={() => {
+                        const text = message.parts
+                          .filter((p) => p.type === "text")
+                          .map((p) => (p.type === "text" ? p.text : ""))
+                          .join("");
+                        void navigator.clipboard.writeText(text);
+                      }}
+                    >
+                      <Copy />
+                    </MessageAction>
+                  </MessageActions>
+                )}
+              </Message>
+            ))}
+            {status === "submitted" && (
+              <Message from="assistant">
+                <MessageContent>
+                  <Shimmer>Thinking through your request…</Shimmer>
+                </MessageContent>
+              </Message>
+            )}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+        <div className="border-t border-border bg-background p-4">
+          <div className="mx-auto max-w-3xl">
+            {(errorText || error) && (
+              <p className="mb-3 rounded-md bg-destructive-soft p-3 text-sm text-destructive">
+                {errorText || error?.message}
+              </p>
+            )}
+            <PromptInput onSubmit={submit}>
+              <PromptInputTextarea ref={inputRef} placeholder="Ask about your work…" autoFocus />
+              <PromptInputFooter className="justify-between">
+                <span className="text-xs text-muted-foreground">
+                  Press Enter to send · Shift + Enter for a new line
+                </span>
+                <PromptInputSubmit status={status} onStop={stop} disabled={!busy && false} />
+              </PromptInputFooter>
+            </PromptInput>
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              AI-generated content may be inaccurate - always review before use.
+            </p>
+          </div>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+export function ChatTool({ threadId }: { threadId: string }) {
+  return <ChatInner key={threadId} threadId={threadId} />;
+}

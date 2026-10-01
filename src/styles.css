@@ -157,5 +157,11 @@
     letter-spacing: 0;
   }
 
-  button, a, input, textarea, [role="button"] { transition-duration: 180ms; }
+  button,
+  a,
+  input,
+  textarea,
+  [role="button"] {
+    transition-duration: 180ms;
+  }
 }

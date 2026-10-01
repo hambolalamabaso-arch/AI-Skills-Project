@@ -7,6 +7,142 @@ import { Textarea } from "@/components/ui/textarea";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { summarizeMeeting } from "@/lib/ai.functions";
 
-type Result = { summary:string; actionItems:string; decisions:string; deadlines:string };
-const sections: {key:keyof Result;label:string}[]=[{key:"summary",label:"Summary"},{key:"actionItems",label:"Action Items"},{key:"decisions",label:"Decisions"},{key:"deadlines",label:"Deadlines"}];
-export function MeetingTool(){const call=useServerFn(summarizeMeeting);const[notes,setNotes]=useState("");const[result,setResult]=useState<Result|null>(null);const[loading,setLoading]=useState(false);const[error,setError]=useState("");const[copied,setCopied]=useState("");async function generate(){if(notes.trim().length<20){setError("Paste at least a few lines of meeting notes first.");return;}setLoading(true);setError("");try{setResult(await call({data:{notes}}));}catch(e){setError(e instanceof Error?e.message:"The notes could not be summarized.");}finally{setLoading(false)}}async function copy(key:keyof Result){if(!result)return;await navigator.clipboard.writeText(result[key]);setCopied(key);setTimeout(()=>setCopied(""),1500)}function exportAll(){if(!result)return;const text=sections.map(s=>`${s.label}\n${result[s.key]}`).join("\n\n");const url=URL.createObjectURL(new Blob([text],{type:"text/plain"}));const a=document.createElement("a");a.href=url;a.download="meeting-summary.txt";a.click();URL.revokeObjectURL(url)}return <AppShell title="Meeting Notes Summarizer" subtitle="Turn unstructured notes into clear outcomes and next steps."><div className="grid gap-6 xl:grid-cols-[.78fr_1.22fr]"><section className="rounded-lg border border-border bg-card p-5 shadow-sm md:p-7"><div className="mb-6 flex items-center gap-3"><span className="grid size-10 place-items-center rounded-lg bg-secondary text-primary"><ClipboardList/></span><div><h2 className="font-semibold">Raw meeting notes</h2><p className="text-sm text-muted-foreground">Paste notes, transcripts, or rough bullets.</p></div></div><Textarea className="min-h-[430px] resize-y leading-relaxed" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Paste your meeting notes here…"/>{error&&<p className="mt-4 rounded-md bg-destructive-soft p-3 text-sm text-destructive">{error}</p>}<Button className="mt-5 w-full sm:w-auto" onClick={generate} disabled={loading}>{loading?<ClipboardList className="animate-pulse"/>:<Wand2/>}{loading?"Analyzing notes…":"Summarize meeting"}</Button></section><section className="flex min-h-[580px] flex-col"><div className="mb-4 flex items-end justify-between"><div><h2 className="font-semibold">Meeting brief</h2><p className="mt-1 text-sm text-muted-foreground">Review and edit every section.</p></div><Button size="sm" variant="outline" disabled={!result||loading} onClick={exportAll}><Download/>Export all</Button></div>{loading?<div className="grid flex-1 place-items-center rounded-lg border border-dashed border-border bg-muted/40"><Shimmer>Finding outcomes and commitments…</Shimmer></div>:result?<div className="grid flex-1 gap-4 md:grid-cols-2">{sections.map(section=><article key={section.key} className="flex min-h-64 flex-col rounded-lg border border-border bg-card p-5 shadow-sm"><div className="flex items-center justify-between"><h3 className="font-semibold">{section.label}</h3><Button size="icon-sm" variant="ghost" aria-label={`Copy ${section.label}`} onClick={()=>copy(section.key)}>{copied===section.key?<Check/>:<Copy/>}</Button></div><Textarea className="mt-4 min-h-44 flex-1 resize-none border-0 bg-transparent p-0 shadow-none focus-visible:ring-0" value={result[section.key]} onChange={e=>setResult({...result,[section.key]:e.target.value})}/></article>)}</div>:<div className="grid flex-1 place-items-center rounded-lg border border-dashed border-border bg-muted/40 px-8 text-center"><div><ClipboardList className="mx-auto size-7 text-muted-foreground"/><p className="mt-4 text-sm font-medium">Structured outcomes will appear here</p><p className="mt-1 text-xs text-muted-foreground">Summary, actions, decisions, and deadlines.</p></div></div>}<p className="mt-4 text-xs text-muted-foreground">AI-generated content may be inaccurate - always review before use.</p></section></div></AppShell>}
+type Result = { summary: string; actionItems: string; decisions: string; deadlines: string };
+const sections: { key: keyof Result; label: string }[] = [
+  { key: "summary", label: "Summary" },
+  { key: "actionItems", label: "Action Items" },
+  { key: "decisions", label: "Decisions" },
+  { key: "deadlines", label: "Deadlines" },
+];
+export function MeetingTool() {
+  const call = useServerFn(summarizeMeeting);
+  const [notes, setNotes] = useState("");
+  const [result, setResult] = useState<Result | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState("");
+  async function generate() {
+    if (notes.trim().length < 20) {
+      setError("Paste at least a few lines of meeting notes first.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      setResult(await call({ data: { notes } }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "The notes could not be summarized.");
+    } finally {
+      setLoading(false);
+    }
+  }
+  async function copy(key: keyof Result) {
+    if (!result) return;
+    await navigator.clipboard.writeText(result[key]);
+    setCopied(key);
+    setTimeout(() => setCopied(""), 1500);
+  }
+  function exportAll() {
+    if (!result) return;
+    const text = sections.map((s) => `${s.label}\n${result[s.key]}`).join("\n\n");
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "meeting-summary.txt";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  return (
+    <AppShell
+      title="Meeting Notes Summarizer"
+      subtitle="Turn unstructured notes into clear outcomes and next steps."
+    >
+      <div className="grid gap-6 xl:grid-cols-[.78fr_1.22fr]">
+        <section className="rounded-lg border border-border bg-card p-5 shadow-sm md:p-7">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-lg bg-secondary text-primary">
+              <ClipboardList />
+            </span>
+            <div>
+              <h2 className="font-semibold">Raw meeting notes</h2>
+              <p className="text-sm text-muted-foreground">
+                Paste notes, transcripts, or rough bullets.
+              </p>
+            </div>
+          </div>
+          <Textarea
+            className="min-h-[430px] resize-y leading-relaxed"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Paste your meeting notes here…"
+          />
+          {error && (
+            <p className="mt-4 rounded-md bg-destructive-soft p-3 text-sm text-destructive">
+              {error}
+            </p>
+          )}
+          <Button className="mt-5 w-full sm:w-auto" onClick={generate} disabled={loading}>
+            {loading ? <ClipboardList className="animate-pulse" /> : <Wand2 />}
+            {loading ? "Analyzing notes…" : "Summarize meeting"}
+          </Button>
+        </section>
+        <section className="flex min-h-[580px] flex-col">
+          <div className="mb-4 flex items-end justify-between">
+            <div>
+              <h2 className="font-semibold">Meeting brief</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Review and edit every section.</p>
+            </div>
+            <Button size="sm" variant="outline" disabled={!result || loading} onClick={exportAll}>
+              <Download />
+              Export all
+            </Button>
+          </div>
+          {loading ? (
+            <div className="grid flex-1 place-items-center rounded-lg border border-dashed border-border bg-muted/40">
+              <Shimmer>Finding outcomes and commitments…</Shimmer>
+            </div>
+          ) : result ? (
+            <div className="grid flex-1 gap-4 md:grid-cols-2">
+              {sections.map((section) => (
+                <article
+                  key={section.key}
+                  className="flex min-h-64 flex-col rounded-lg border border-border bg-card p-5 shadow-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">{section.label}</h3>
+                    <Button
+                      size="icon-sm"
+                      variant="ghost"
+                      aria-label={`Copy ${section.label}`}
+                      onClick={() => copy(section.key)}
+                    >
+                      {copied === section.key ? <Check /> : <Copy />}
+                    </Button>
+                  </div>
+                  <Textarea
+                    className="mt-4 min-h-44 flex-1 resize-none border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
+                    value={result[section.key]}
+                    onChange={(e) => setResult({ ...result, [section.key]: e.target.value })}
+                  />
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="grid flex-1 place-items-center rounded-lg border border-dashed border-border bg-muted/40 px-8 text-center">
+              <div>
+                <ClipboardList className="mx-auto size-7 text-muted-foreground" />
+                <p className="mt-4 text-sm font-medium">Structured outcomes will appear here</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Summary, actions, decisions, and deadlines.
+                </p>
+              </div>
+            </div>
+          )}
+          <p className="mt-4 text-xs text-muted-foreground">
+            AI-generated content may be inaccurate - always review before use.
+          </p>
+        </section>
+      </div>
+    </AppShell>
+  );
+}

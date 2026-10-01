@@ -1,3 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Dashboard } from "@/components/workplace/dashboard";
-export const Route=createFileRoute("/")({head:()=>({meta:[{title:"Dashboard | AI Workplace Productivity Assistant"},{name:"description",content:"AI-powered workplace dashboard for email drafting, meeting summaries, and productivity chat."},{property:"og:title",content:"AI Workplace Productivity Assistant"},{property:"og:description",content:"Work smarter with focused AI tools for communication, meetings, and planning."},{property:"og:type",content:"website"},{name:"twitter:card",content:"summary_large_image"}]}),component:Dashboard});
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Dashboard | AI Workplace Productivity Assistant" },
+      {
+        name: "description",
+        content:
+          "AI-powered workplace dashboard for email drafting, meeting summaries, and productivity chat.",
+      },
+      { property: "og:title", content: "AI Workplace Productivity Assistant" },
+      {
+        property: "og:description",
+        content: "Work smarter with focused AI tools for communication, meetings, and planning.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Dashboard,
+});
