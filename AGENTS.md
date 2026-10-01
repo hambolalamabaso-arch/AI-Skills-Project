@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep AI model calls and prompts behind server boundaries so credentials and hidden instructions never reach the browser.
+- Chat threads use route-derived IDs and sessionStorage only, because conversations must support multiple tabs without surviving the browser session.
